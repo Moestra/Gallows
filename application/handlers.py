@@ -140,10 +140,12 @@ async def gallowa_gaming(message: Message, state: FSMContext):
         await message.answer(f"Извините, {letter} это число. Введите букву")
         attempts +=1
         await message.answer(f"Попыток осталось {max_attempts - attempts}")
+        return
     elif len(letter) != 1:
         await message.answer("Извините, введите одну букву")
         attempts +=1
         await message.answer(f"Попыток осталось {max_attempts - attempts}")
+        return
     else:
         await message.answer(f"Извините, {letter} этой буквы нет в слове")
         attempts +=1
