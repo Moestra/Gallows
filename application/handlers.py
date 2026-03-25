@@ -74,29 +74,33 @@ async def start_game(message: Message):
     await message.answer("Игра началась")
     await message.answer("ПРАВИЛА ИГРЫ: Суть игры отгадать слово. Кол-во черточек — это кол-во букв в слове. За каждую неправильную букву отнимается жизнь. Задача отгадать слово быстрее чем закончатся жизни.", reply_markup=kb.start_game)
 
-def display_world(word, guessed_word):
-    display = ""
-    for letter in word:
-        if letter.lower() in guessed_word:
-            display += letter.upper() 
-        else:
-            display = "_ " 
-    return display.strip()
+# def display_world(word, guessed_word):
+#     display = ""
+#     for letter in word:
+#         if letter.lower() in guessed_word:
+#             display += letter.upper() 
+#         else:
+#             display = "_ " 
+#     return display.strip()
 
     
 @router.message(F.text == "Начать")
 async def gallows_game(message: Message, state: FSMContext):
     word = random.choice(WORDS)
+    so_cor = "_" * len(word)
     
     await state.update_data(
         word = word,
-        attempts = 6,
-        guessed_word = []    
+        max_attempts = 6,
+        attempts = 0,
+        used = [],
+        so_cor = so_cor  
     )
         
     await message.answer("Добро пожаловать в Виселицу!")
-    await message.answer(f"Слово: {'_ ' *len(word)}")
-    await message.answer(f"Оставшиеся попытки:6")
+    await message.answer(f"Слово на данный момент выглядит так: {' '.join(so_cor)}")
+    await message.answer(f"Всего у вас 6 попыток")
+    await message.answer("Введите свое преположение:")
     await state.set_state(Gallows.playing)
 
 
@@ -107,52 +111,70 @@ async def gallowa_gaming(message: Message, state: FSMContext):
     data = await state.get_data()
     
     word = data['word']
+    max_attempts = data['max_attempts']
     attempts = data['attempts']
-    guessed_word = data['guessed_word']
+    used = data['used']
+    so_cor = data['so_cor']
     
-    if int(letter.isdigit()):
-        await message.answer("Ошибка, введите букву")
-        return 
-
-    if len(letter) != 1:
-        await message.answer("Введите одну букву")
-        return 
     
-    if letter in guessed_word:
-        await message.answer("Вы уже вводили эту букву")
-        return 
-     
-    guessed_word.append(letter)
-    for i in guessed_word:
-        await message.answer(f"Буква :{i}")
     
-    if letter in word.lower():
-        display = display_world(word, guessed_word)
-        await message.answer("Эта буква есть в  слове")
-        await message.answer(f"Слово:{display}")
+    while attempts < max_attempts and so_cor != word:
         
-        if '_' not in  display :
-            await message.answer(f"Поздравляю!!!Вы отгадали слово: {word.upper()}")
-            await state.clear()
-            return
-        
-        elif letter not in word:
-            attempts -= 1 
-            await message.answer(f"Буквы {letter} нет в слове")
-            await message.answer(f"Осталось попыток: {attempts}")
-            display = display_world(word, guessed_word)
-            await message.answer(f"Слово: {display}")
+        while letter in used:
+            await message.answer(f"Вы уже вводили этц букву: {letter}")
+            await message.answer(f"Введите свое предположение")
             
-        if attempts <= 0:
-            await message.answer(f"Вы проиграли, загаданное слово было:{word.upper()}") 
-            await state.clear()
-            return
-        
+      
+        used.append(letter)
+    
+    if letter.lower() in word:
+        await message.answer(f"Да, {letter} есть в слове")
+        new = ""
+        for i in range(len(word)):
+            if letter.lower() == word[i]:
+                new += letter.lower()
+            else:
+                new += so_cor[i]
+        so_cor = new
+    elif int(letter.isdigit()):
+        await message.answer(f"Извините, {letter} это число. Введите букву")
+        attempts +=1
+        await message.answer(f"Попыток осталось {max_attempts - attempts}")
+    elif len(letter) != 1:
+        await message.answer("Извините, введите одну букву")
+        attempts +=1
+        await message.answer(f"Попыток осталось {max_attempts - attempts}")
+    else:
+        await message.answer(f"Извините, {letter} этой буквы нет в слове")
+        attempts +=1
+        await message.answer(f"Попыток осталось {max_attempts - attempts}")
+
+    if attempts == max_attempts:
+        await message.answer("Вы проиграли")
+        await message.answer(f"Загаданное слово {word}")
+        await state.clear()
+    else:
+        await message.answer("ПОБЕДА!!!")
+        await message.answer(f"Загаданное слово {word}")
+        await state.clear()
+    
      
         await state.update_data(
-            guessed_word= guessed_word,
-            attempts=attempts
+            used = used,
+            attempts=attempts,
+            max_attempts = max_attempts,
+            so_cor = so_cor
         )
+
+
+
+
+
+
+
+
+
+
 
 @router.message(Command('stop'))
 async def cmd_stop(massege: Message, state: FSMContext):
