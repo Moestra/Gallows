@@ -92,7 +92,7 @@ async def gallows_game(message: Message, state: FSMContext):
     await message.answer("Добро пожаловать в Виселицу!")
     await message.answer(f"Слово на данный момент выглядит так: \n{' '.join(so_cor)}")
     await message.answer(f"Всего у вас 6 попыток")
-    await message.answer("Введите свое преположение:")
+    await message.answer("Введите свое предположение:")
     await state.set_state(Gallows.playing)
 
 
