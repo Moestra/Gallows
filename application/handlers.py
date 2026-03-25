@@ -90,7 +90,7 @@ async def gallows_game(message: Message, state: FSMContext):
     )
         
     await message.answer("Добро пожаловать в Виселицу!")
-    await message.answer(f"Слово на данный момент выглядит так: {' '.join(so_cor)}")
+    await message.answer(f"Слово на данный момент выглядит так: \n{' '.join(so_cor)}")
     await message.answer(f"Всего у вас 6 попыток")
     await message.answer("Введите свое преположение:")
     await state.set_state(Gallows.playing)
@@ -140,6 +140,7 @@ async def gallowa_gaming(message: Message, state: FSMContext):
     
     if letter.lower() in word:
         await message.answer(f"Да, {letter} есть в слове")
+        await message.answer(f"Слово выглядит так: {' '.join(so_cor)}")
         new = ""
         for i in range(len(word)):
             if letter.lower() == word[i]:
