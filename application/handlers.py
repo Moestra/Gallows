@@ -18,8 +18,8 @@ class Register(StatesGroup):
 class Gallows(StatesGroup):
     playing = State()
 
-
-WORDS = ["огурец", "желтый", "автобус", "лето", "солнце", "мир"]
+with open("output.txt", "r", encoding="utf-8") as file:
+    WORDS = [line.strip() for line in file]
 
 
 
