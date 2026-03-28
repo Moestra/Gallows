@@ -175,11 +175,15 @@ async def gallowa_gaming(message: Message, state: FSMContext):
         so_cor = so_cor
     )
 
+@router.message(F.text == "Назад")
+async def exit_menu(messenge: Message):
+    await messenge.answer("Вы вернулись в меню", reply_markup=kb.games)
 
-@router.message(Command('stop'))
-async def cmd_stop(massege: Message, state: FSMContext):
-    stoping = await state.get_state()
-    if stoping is not None:
-        await state.clear()
-        await massege.answer("Вы завершили игру")
-        await massege.answer("Для того чтобы начать игру, нажмите кнопку Начать")
+
+# @router.message(Command('stop'))
+# async def cmd_stop(massege: Message, state: FSMContext):
+#     stoping = await state.get_state()
+#     if stoping is not None:
+#         await state.clear()
+#         await massege.answer("Вы завершили игру")
+#         await massege.answer("Для того чтобы начать игру, нажмите кнопку Начать")
