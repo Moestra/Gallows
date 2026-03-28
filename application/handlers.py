@@ -133,7 +133,7 @@ async def gallowa_gaming(message: Message, state: FSMContext):
         return
     
     if letter in used:
-        await message.answer(f"Вы уже вводили эту букву: {letter}")
+        await message.answer(f"Вы уже вводили эту букву: '{letter.upper()}'")
         await message.answer(f"Попыток осталось {max_attempts - attempts}")
         return
     used.append(letter)
@@ -146,7 +146,7 @@ async def gallowa_gaming(message: Message, state: FSMContext):
             else:
                 new += so_cor[i]
         so_cor = new
-        await message.answer(f"Да, {letter} есть в слове")
+        await message.answer(f"Да, '{letter.upper()}' есть в слове")
         await message.answer(f"Слово выглядит так: {' '.join(so_cor)}")
         
         
@@ -158,7 +158,7 @@ async def gallowa_gaming(message: Message, state: FSMContext):
     
     
     else:
-        await message.answer(f"Извините, {letter} этой буквы нет в слове")
+        await message.answer(f"Извините, '{letter.upper()}' этой буквы нет в слове")
         attempts +=1
         await message.answer(f"Попыток осталось {max_attempts - attempts}")
 
