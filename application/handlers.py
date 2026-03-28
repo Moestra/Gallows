@@ -18,7 +18,7 @@ class Register(StatesGroup):
 class Gallows(StatesGroup):
     playing = State()
 
-with open("output.txt", "r", encoding="utf-8") as file:
+with open("output_new.txt", "r", encoding="utf-8") as file:
     WORDS = [line.strip() for line in file]
 
 
